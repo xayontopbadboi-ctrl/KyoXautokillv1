@@ -96,8 +96,6 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage").RemotesEvent.SizeChanged:FireServer(unpack(args))
-
-
 -- 1. CREATE THE GUI
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
