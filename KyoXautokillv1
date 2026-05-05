@@ -96,3 +96,77 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage").RemotesEvent.SizeChanged:FireServer(unpack(args))
+
+
+-- 1. CREATE THE GUI
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local KillCount = Instance.new("TextLabel")
+local UICorner = Instance.new("UICorner")
+
+-- Setup ScreenGui
+ScreenGui.Name = "ExecutorKillCounter"
+ScreenGui.Parent = game.CoreGui -- CoreGui prevents it from deleting on reset
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Setup Main Frame
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Position = UDim2.new(0.02, 0, 0.4, 0)
+MainFrame.Size = UDim2.new(0, 150, 0, 80)
+MainFrame.Active = true
+MainFrame.Draggable = true -- Allows you to move it around
+
+UICorner.Parent = MainFrame
+
+-- Setup Title
+Title.Name = "Kyo"
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Size = UDim2.new(1, 0, 0.4, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "Kills"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+
+-- Setup Kill Count Display
+KillCount.Name = "KillCount"
+KillCount.Parent = MainFrame
+KillCount.BackgroundTransparency = 1
+KillCount.Position = UDim2.new(0, 0, 0.4, 0)
+KillCount.Size = UDim2.new(1, 0, 0.6, 0)
+KillCount.Font = Enum.Font.GothamBlack
+KillCount.Text = "0"
+KillCount.TextColor3 = Color3.fromRGB(0, 255, 120)
+KillCount.TextSize = 35
+
+-- 2. LOGIC: TRACKING KILLS
+local player = game.Players.LocalPlayer
+
+local function getKills()
+    -- Tries to find common kill stat names used by developers
+    local stats = player:FindFirstChild("leaderstats")
+    if stats then
+        return stats:FindFirstChild("Kills") or stats:FindFirstChild("Kills ") or stats:FindFirstChild("Kills_")
+    end
+    return nil
+end
+
+local killStat = getKills()
+
+if killStat then
+    -- Update function
+    local function updateText()
+        KillCount.Text = tostring(killStat.Value)
+    end
+    
+    -- Listen for changes
+    killStat.Changed:Connect(updateText)
+    updateText()
+else
+    KillCount.TextSize = 12
+    KillCount.TextColor3 = Color3.fromRGB(255, 80, 80)
+    KillCount.Text = "Kills not found in Leaderstats"
+end
